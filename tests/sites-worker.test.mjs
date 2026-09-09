@@ -39,6 +39,9 @@ test("falls back to the portfolio page for browser routes", async () => {
 test("build emits the files required by Sites", async () => {
   await access(new URL("../dist/client/index.html", import.meta.url));
   await access(new URL("../dist/client/assets/pages/page-01.jpg", import.meta.url));
+  await access(new URL("../dist/client/resume/index.html", import.meta.url));
+  await access(new URL("../dist/client/resume/assets/pages/page-01.jpg", import.meta.url));
+  await access(new URL("../dist/client/resume/assets/pdf/visual-designer-resume.pdf", import.meta.url));
   await access(new URL("../dist/server/index.js", import.meta.url));
   await access(new URL("../dist/.openai/hosting.json", import.meta.url));
 });
