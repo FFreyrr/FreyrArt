@@ -7,18 +7,24 @@
     <meta name="description" content="王裕个人作品集在线预览">
     <style>
       :root {
-        color-scheme: light;
-        --ink: #1f2933;
-        --muted: #607080;
-        --line: #d8e0e8;
-        --paper: #f6f8fb;
-        --panel: #ffffff;
-        --accent: #0969da;
-        --accent-strong: #0757b8;
+        color-scheme: dark;
+        --bg: #080808;
+        --ink: #f5f1ea;
+        --muted: #a9a39a;
+        --line: rgba(255, 255, 255, 0.16);
+        --portfolio-scale: 1;
       }
 
       * {
         box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      html.is-anchored-zoom {
+        scroll-behavior: auto;
       }
 
       body {
@@ -26,115 +32,503 @@
         min-height: 100vh;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         color: var(--ink);
-        background: var(--paper);
+        background: var(--bg);
+        overflow-x: auto;
       }
 
-      .topbar {
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 16px;
-        padding: 18px clamp(16px, 4vw, 40px);
+        min-height: 60px;
+        padding: 12px clamp(14px, 3vw, 36px);
         border-bottom: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.94);
+        background: rgba(8, 8, 8, 0.86);
+        backdrop-filter: blur(14px);
+        transition: transform 220ms ease, opacity 220ms ease;
+        will-change: transform;
       }
 
-      .title {
+      .site-header.is-hidden {
+        opacity: 0;
+        transform: translateY(-100%);
+      }
+
+      .brand {
         min-width: 0;
       }
 
       h1 {
         margin: 0;
-        font-size: clamp(20px, 2.5vw, 28px);
-        font-weight: 700;
+        font-size: clamp(17px, 2vw, 22px);
+        font-weight: 650;
+        letter-spacing: 0;
         line-height: 1.2;
       }
 
-      p {
-        margin: 6px 0 0;
+      .meta {
+        margin: 3px 0 0;
         color: var(--muted);
-        font-size: 14px;
+        font-size: 12px;
+        line-height: 1.4;
       }
 
-      .actions {
-        display: flex;
-        gap: 10px;
-        flex-shrink: 0;
-      }
-
-      .button {
+      .download {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-height: 40px;
-        padding: 0 14px;
+        min-height: 36px;
+        padding: 0 13px;
         border: 1px solid var(--line);
         border-radius: 8px;
         color: var(--ink);
-        background: var(--panel);
-        font-size: 14px;
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 13px;
         font-weight: 600;
         text-decoration: none;
+        white-space: nowrap;
       }
 
-      .button.primary {
-        border-color: var(--accent);
-        color: #ffffff;
-        background: var(--accent);
+      .download:hover {
+        background: rgba(255, 255, 255, 0.14);
       }
 
-      .button.primary:hover {
-        background: var(--accent-strong);
+      .header-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        flex-shrink: 0;
       }
 
-      .viewer {
-        height: calc(100vh - 77px);
-        padding: clamp(10px, 2vw, 20px);
-      }
-
-      iframe {
-        display: block;
-        width: 100%;
-        height: 100%;
+      .zoom-controls {
+        display: inline-flex;
+        align-items: center;
+        min-height: 36px;
         border: 1px solid var(--line);
         border-radius: 8px;
-        background: var(--panel);
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .zoom-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        min-height: 36px;
+        border: 0;
+        border-radius: 0;
+        color: var(--ink);
+        background: transparent;
+        font: inherit;
+        font-size: 18px;
+        line-height: 1;
+        cursor: pointer;
+      }
+
+      .zoom-button:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .zoom-button:disabled {
+        color: rgba(245, 241, 234, 0.32);
+        cursor: default;
+      }
+
+      .zoom-value {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        min-height: 36px;
+        border-right: 1px solid var(--line);
+        border-left: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 650;
+        line-height: 1;
+      }
+
+      main {
+        width: calc(100vw * var(--portfolio-scale));
+        margin: 0 auto;
+        padding: clamp(6px, calc(2vw * var(--portfolio-scale)), 22px);
+        transition: width 180ms ease, padding 180ms ease;
+      }
+
+      html.is-anchored-zoom main {
+        transition: none;
+      }
+
+      .page {
+        margin: 0 0 clamp(10px, 2vw, 22px);
+      }
+
+      .page img,
+      .video-block video {
+        display: block;
+        width: 100%;
+        height: auto;
+        border: 0;
+        background: #111111;
+      }
+
+      .video-block video {
+        aspect-ratio: 16 / 9;
+        max-height: calc(100vh - 118px);
+        object-fit: contain;
+      }
+
+      .video-block {
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        margin: 0 0 clamp(10px, 2vw, 22px);
+        padding: clamp(14px, 2vw, 24px) 0;
+      }
+
+      .video-title {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+        margin: 0 0 12px;
+        color: var(--ink);
+        font-size: clamp(15px, 1.8vw, 20px);
+        font-weight: 650;
+        line-height: 1.3;
+      }
+
+      .video-title span {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 500;
+        white-space: nowrap;
       }
 
       @media (max-width: 720px) {
-        .topbar {
-          align-items: flex-start;
-          flex-direction: column;
+        .site-header {
+          min-height: 54px;
+          padding: 10px 12px;
         }
 
-        .actions {
-          width: 100%;
+        .meta {
+          display: none;
         }
 
-        .button {
-          flex: 1;
-        }
-
-        .viewer {
-          height: calc(100vh - 140px);
+        main {
           padding: 8px;
+        }
+
+        .header-actions {
+          gap: 6px;
+        }
+
+        .download {
+          min-height: 34px;
+          padding: 0 10px;
+        }
+
+        .zoom-controls,
+        .zoom-button,
+        .zoom-value {
+          min-height: 34px;
+        }
+
+        .zoom-button {
+          width: 32px;
+        }
+
+        .zoom-value {
+          width: 42px;
         }
       }
     </style>
   </head>
   <body>
-    <header class="topbar">
-      <div class="title">
+    <header class="site-header">
+      <div class="brand">
         <h1>王裕 个人作品集</h1>
-        <p>2027 校招 · 清华硕士</p>
+        <p class="meta">Personal Portfolio</p>
       </div>
-      <nav class="actions" aria-label="简历操作">
-        <a class="button" href="Portfolio.pdf" target="_blank" rel="noopener">打开 PDF</a>
-        <a class="button primary" href="Portfolio.pdf" download>下载作品集</a>
-      </nav>
+      <div class="header-actions">
+        <div class="zoom-controls" aria-label="页面缩放">
+          <button class="zoom-button" type="button" data-zoom-out aria-label="缩小">-</button>
+          <output class="zoom-value" aria-live="polite">100%</output>
+          <button class="zoom-button" type="button" data-zoom-in aria-label="放大">+</button>
+        </div>
+        <a class="download" href="Portfolio.pdf" download>下载 PDF</a>
+      </div>
     </header>
-    <main class="viewer">
-      <iframe src="Portfolio.pdf#view=FitH" title="王裕个人作品集 PDF 预览"></iframe>
+
+    <main aria-label="作品集页面">
+      <figure class="page"><img src="assets/pages/page-01.jpg" width="1871" height="1323" alt="作品集第 1 页" loading="eager" fetchpriority="high"></figure>
+      <figure class="page"><img src="assets/pages/page-02.jpg" width="3742" height="1323" alt="作品集第 2 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-03.jpg" width="3742" height="1323" alt="作品集第 3 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-04.jpg" width="3742" height="1323" alt="作品集第 4 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-05.jpg" width="3742" height="1323" alt="作品集第 5 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-06.jpg" width="3742" height="1323" alt="作品集第 6 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-07.jpg" width="3742" height="1323" alt="作品集第 7 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-08.jpg" width="3742" height="1323" alt="作品集第 8 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-09.jpg" width="3742" height="1323" alt="作品集第 9 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-10.jpg" width="3742" height="1323" alt="作品集第 10 页" loading="lazy"></figure>
+      <section class="video-block" aria-label="最后一眼 The Last Look 视频">
+        <h2 class="video-title">最后一眼 The Last Look <span>Video</span></h2>
+        <video controls playsinline preload="metadata" poster="https://ffreyrr.github.io/portfolio-video/assets/the-last-look.jpg">
+          <source src="https://ffreyrr.github.io/portfolio-video/videos/the-last-look.mp4" type="video/mp4">
+          你的浏览器不支持视频播放。
+        </video>
+      </section>
+      <figure class="page"><img src="assets/pages/page-11.jpg" width="3742" height="1323" alt="作品集第 11 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-12.jpg" width="3742" height="1323" alt="作品集第 12 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-13.jpg" width="3742" height="1323" alt="作品集第 13 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-14.jpg" width="3742" height="1323" alt="作品集第 14 页" loading="lazy"></figure>
+      <section class="video-block" aria-label="造神试验记录视频">
+        <h2 class="video-title">造神试验记录 How do we create a new god <span>Video</span></h2>
+        <video controls playsinline preload="none">
+          <source src="https://ffreyrr.github.io/portfolio-video/videos/%E9%80%A0%E7%A5%9E%E8%AF%95%E9%AA%8C%E8%AE%B0%E5%BD%95_How_do_we_create_a_new_god_%E2%80%94_FreyrArt.mp4" type="video/mp4">
+          你的浏览器不支持视频播放。
+        </video>
+      </section>
+      <figure class="page"><img src="assets/pages/page-15.jpg" width="3742" height="1323" alt="作品集第 15 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-16.jpg" width="3742" height="1323" alt="作品集第 16 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-17.jpg" width="3742" height="1323" alt="作品集第 17 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-18.jpg" width="3742" height="1323" alt="作品集第 18 页" loading="lazy"></figure>
+      <section class="video-block" aria-label="The Bottle 青少年心理疾病成因视频">
+        <h2 class="video-title">The Bottle 青少年心理疾病成因 <span>Video</span></h2>
+        <video controls playsinline preload="metadata">
+          <source src="https://ffreyrr.github.io/portfolio-video/videos/The_Bottle_%E9%9D%92%E5%B0%91%E5%B9%B4%E5%BF%83%E7%90%86%E7%96%BE%E7%97%85%E6%88%90%E5%9B%A0_%E2%80%94_FreyrArt.mp4" type="video/mp4">
+          你的浏览器不支持视频播放。
+        </video>
+      </section>
+      <figure class="page"><img src="assets/pages/page-19.jpg" width="3742" height="1323" alt="作品集第 19 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-20.jpg" width="3742" height="1323" alt="作品集第 20 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-21.jpg" width="3742" height="1323" alt="作品集第 21 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-22.jpg" width="3742" height="1323" alt="作品集第 22 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-23.jpg" width="3742" height="1323" alt="作品集第 23 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-24.jpg" width="3742" height="1323" alt="作品集第 24 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-25.jpg" width="3742" height="1323" alt="作品集第 25 页" loading="lazy"></figure>
+      <section class="video-block" aria-label="Hoo 呼吸体视频">
+        <h2 class="video-title">Hoo 呼吸体 <span>Video</span></h2>
+        <video controls playsinline preload="metadata" poster="https://ffreyrr.github.io/portfolio-video/assets/hoo.jpg">
+          <source src="https://ffreyrr.github.io/portfolio-video/videos/hoo.mp4" type="video/mp4">
+          你的浏览器不支持视频播放。
+        </video>
+      </section>
+      <figure class="page"><img src="assets/pages/page-26.jpg" width="3742" height="1323" alt="作品集第 26 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-27.jpg" width="3742" height="1323" alt="作品集第 27 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-28.jpg" width="3742" height="1323" alt="作品集第 28 页" loading="lazy"></figure>
+      <section class="video-block" aria-label="在地共生 Local Symbiosis 视频">
+        <h2 class="video-title">在地共生 Local Symbiosis <span>Video</span></h2>
+        <video controls playsinline preload="metadata">
+          <source src="https://ffreyrr.github.io/portfolio-video/videos/%E5%9C%A8%E5%9C%B0%E5%85%B1%E7%94%9F_Local_Symbiosis_%E2%80%94_FreyrArt.mp4" type="video/mp4">
+          你的浏览器不支持视频播放。
+        </video>
+      </section>
+      <figure class="page"><img src="assets/pages/page-29.jpg" width="3742" height="1323" alt="作品集第 29 页" loading="lazy"></figure>
+      <section class="video-block" aria-label="追觅 DreameRing 视频">
+        <h2 class="video-title">追觅 DreameRing <span>Video</span></h2>
+        <video controls playsinline preload="metadata" poster="https://ffreyrr.github.io/portfolio-video/assets/dreame-ring.jpg">
+          <source src="https://ffreyrr.github.io/portfolio-video/videos/%E8%BF%BD%E8%A7%85_DreameRing_%E2%80%94_FreyrArt.mp4" type="video/mp4">
+          你的浏览器不支持视频播放。
+        </video>
+      </section>
+      <figure class="page"><img src="assets/pages/page-30.jpg" width="3742" height="1323" alt="作品集第 30 页" loading="lazy"></figure>
+      <section class="video-block" aria-label="残局视频">
+        <h2 class="video-title">残局 <span>Video</span></h2>
+        <video controls playsinline preload="metadata" poster="https://ffreyrr.github.io/portfolio-video/assets/endgame.jpg">
+          <source src="https://ffreyrr.github.io/portfolio-video/videos/endgame.mp4" type="video/mp4">
+          你的浏览器不支持视频播放。
+        </video>
+      </section>
+      <figure class="page"><img src="assets/pages/page-31.jpg" width="3742" height="1323" alt="作品集第 31 页" loading="lazy"></figure>
+      <section class="video-block" aria-label="星迹视频">
+        <h2 class="video-title">星迹 <span>Video</span></h2>
+        <video controls playsinline preload="metadata" poster="https://ffreyrr.github.io/portfolio-video/assets/star-trace.jpg">
+          <source src="https://ffreyrr.github.io/portfolio-video/videos/star-trace.mp4" type="video/mp4">
+          你的浏览器不支持视频播放。
+        </video>
+      </section>
+      <figure class="page"><img src="assets/pages/page-32.jpg" width="3742" height="1323" alt="作品集第 32 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-33.jpg" width="3742" height="1323" alt="作品集第 33 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-34.jpg" width="3742" height="1323" alt="作品集第 34 页" loading="lazy"></figure>
+      <figure class="page"><img src="assets/pages/page-35.jpg" width="1871" height="1323" alt="作品集第 35 页" loading="lazy"></figure>
     </main>
+    <script>
+      const header = document.querySelector(".site-header");
+      const root = document.documentElement;
+      const zoomValue = document.querySelector(".zoom-value");
+      const zoomOut = document.querySelector("[data-zoom-out]");
+      const zoomIn = document.querySelector("[data-zoom-in]");
+      const zoomMin = 0.3;
+      const zoomMax = 2.4;
+      const buttonZoomStep = 0.05;
+      let lastScrollY = window.scrollY;
+      let ticking = false;
+      let zoom = 1;
+      let gestureStartZoom = 1;
+      let gestureAnchor = null;
+      let lastPointer = {
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2,
+      };
+
+      try {
+        const savedZoom = Number(window.localStorage.getItem("portfolioZoom"));
+        if (Number.isFinite(savedZoom)) {
+          zoom = savedZoom;
+        }
+      } catch {
+        zoom = 1;
+      }
+
+      function clampZoom(value) {
+        return Math.max(zoomMin, Math.min(zoomMax, value));
+      }
+
+      function getEventPoint(event) {
+        const hasPoint = Number.isFinite(event.clientX) && Number.isFinite(event.clientY);
+        const x = hasPoint && event.clientX > 0 ? event.clientX : lastPointer.x;
+        const y = hasPoint && event.clientY > 0 ? event.clientY : lastPointer.y;
+        return { x, y };
+      }
+
+      function captureAnchor(point) {
+        const x = point?.x ?? window.innerWidth / 2;
+        const y = point?.y ?? window.innerHeight / 2;
+        const element = document.elementFromPoint(x, y)?.closest(".page, .video-block, main");
+
+        if (!element) {
+          return { element: null, x, y, ratioX: 0.5, ratioY: 0.5 };
+        }
+
+        const rect = element.getBoundingClientRect();
+        const ratioX = rect.width > 0 ? (x - rect.left) / rect.width : 0.5;
+        const ratioY = rect.height > 0 ? (y - rect.top) / rect.height : 0.5;
+        return {
+          element,
+          x,
+          y,
+          ratioX: Math.max(0, Math.min(1, ratioX)),
+          ratioY: Math.max(0, Math.min(1, ratioY)),
+        };
+      }
+
+      function restoreAnchor(anchor) {
+        if (!anchor?.element) {
+          return;
+        }
+
+        window.requestAnimationFrame(() => {
+          const rect = anchor.element.getBoundingClientRect();
+          const targetX = window.scrollX + rect.left + rect.width * anchor.ratioX;
+          const targetY = window.scrollY + rect.top + rect.height * anchor.ratioY;
+          window.scrollTo({
+            left: targetX - anchor.x,
+            top: targetY - anchor.y,
+            behavior: "auto",
+          });
+          lastScrollY = window.scrollY;
+
+          window.requestAnimationFrame(() => {
+            root.classList.remove("is-anchored-zoom");
+          });
+        });
+      }
+
+      function setZoom(nextZoom, anchor = null) {
+        zoom = Math.round(clampZoom(nextZoom) * 100) / 100;
+        root.classList.toggle("is-anchored-zoom", Boolean(anchor));
+        root.style.setProperty("--portfolio-scale", String(zoom));
+        zoomValue.value = `${Math.round(zoom * 100)}%`;
+        zoomValue.textContent = `${Math.round(zoom * 100)}%`;
+        zoomOut.disabled = zoom <= zoomMin;
+        zoomIn.disabled = zoom >= zoomMax;
+        header.classList.remove("is-hidden");
+
+        try {
+          window.localStorage.setItem("portfolioZoom", String(zoom));
+        } catch {
+          // The page still works if the browser blocks local storage on file URLs.
+        }
+
+        restoreAnchor(anchor);
+      }
+
+      function zoomByDirection(direction) {
+        const anchor = captureAnchor(lastPointer);
+        setZoom(zoom + buttonZoomStep * direction, anchor);
+      }
+
+      function handleWheelZoom(event) {
+        if (!event.ctrlKey && !event.metaKey) {
+          return;
+        }
+
+        event.preventDefault();
+        const point = getEventPoint(event);
+        lastPointer = point;
+        const anchor = captureAnchor(point);
+        const zoomFactor = Math.exp(-event.deltaY * 0.002);
+        setZoom(zoom * zoomFactor, anchor);
+      }
+
+      function handleGestureStart(event) {
+        event.preventDefault();
+        const point = getEventPoint(event);
+        lastPointer = point;
+        gestureStartZoom = zoom;
+        gestureAnchor = captureAnchor(point);
+      }
+
+      function handleGestureChange(event) {
+        event.preventDefault();
+        setZoom(gestureStartZoom * event.scale, gestureAnchor);
+      }
+
+      function handlePointerMove(event) {
+        lastPointer = getEventPoint(event);
+      }
+
+      zoomOut.addEventListener("click", () => zoomByDirection(-1));
+      zoomIn.addEventListener("click", () => zoomByDirection(1));
+      window.addEventListener("pointermove", handlePointerMove, { passive: true });
+      window.addEventListener("mousemove", handlePointerMove, { passive: true });
+      window.addEventListener("wheel", handleWheelZoom, { passive: false });
+      window.addEventListener("gesturestart", handleGestureStart, { passive: false });
+      window.addEventListener("gesturechange", handleGestureChange, { passive: false });
+      setZoom(zoom);
+
+      function updateHeader() {
+        const currentScrollY = window.scrollY;
+        const delta = currentScrollY - lastScrollY;
+
+        if (currentScrollY <= 8) {
+          header.classList.remove("is-hidden");
+        } else if (delta > 8) {
+          header.classList.add("is-hidden");
+        } else if (delta < -8) {
+          header.classList.remove("is-hidden");
+        }
+
+        lastScrollY = currentScrollY;
+        ticking = false;
+      }
+
+      window.addEventListener(
+        "scroll",
+        () => {
+          if (!ticking) {
+            window.requestAnimationFrame(updateHeader);
+            ticking = true;
+          }
+        },
+        { passive: true },
+      );
+    </script>
   </body>
 </html>
